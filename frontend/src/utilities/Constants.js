@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://inventory-managment-project.onrender.com/api";
+export const API_BASE_URL = process.env.REACT_APP_API_URL + "/api";
  
 export const ROLES = {
   ADMIN:   'ADMIN',
