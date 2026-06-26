@@ -1,0 +1,60 @@
+inventory-management-system
+│
+├── presentation                         ← CONTROLLER LAYER
+│   ├── LoginController.java
+│   ├── ProductController.java
+│   ├── InventoryController.java
+│   ├── CategoryController.java
+│   ├── SupplierController.java
+│   ├── TransactionController.java
+│   └── ReportController.java
+│
+├── authentication                      ← AUTH LAYER
+│   ├── AuthService.java
+│   ├── JwtUtil.java
+│   ├── PasswordEncoder.java
+│   └── SecurityConfig.java
+│
+├── business                            ← SERVICE LAYER
+│   ├── ProductService.java
+│   ├── InventoryService.java
+│   ├── TransactionService.java
+│   ├── ReportService.java
+│   └── EmailService.java
+│
+├── database                            ← DATABASE LAYER
+│   │
+│   ├── entity
+│   │   ├── User.java
+│   │   ├── Product.java
+│   │   ├── Supplier.java
+│   │   ├── Category.java
+│   │   └── Transaction.java
+│   │
+│   ├── repository
+│   │   ├── UserRepository.java
+│   │   ├── ProductRepository.java
+│   │   ├── SupplierRepository.java
+│   │   ├── CategoryRepository.java
+│   │   └── TransactionRepository.java
+│   │
+│   └── config (optional)
+│       └── DBConfig.java
+│
+├── dto                                 ← DATA TRANSFER OBJECTS
+│   ├── ProductDTO.java
+│   ├── TransactionDTO.java
+│   └── ReportDTO.java
+│
+├── exception                           ← ERROR HANDLING
+│   ├── GlobalExceptionHandler.java
+│   └── CustomException.java
+│
+├── util                                ← UTILITIES
+│   ├── DateUtil.java
+│   └── Constants.java
+│
+├── resources
+│   └── application.properties
+│
+└── pom.xml

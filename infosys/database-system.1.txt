@@ -1,0 +1,18 @@
+database
+│
+├── entity
+│   ├── User.java
+│   ├── Product.java
+│   ├── Supplier.java
+│   ├── Category.java
+│   └── Transaction.java
+│
+├── repository
+│   ├── UserRepository.java
+│   ├── ProductRepository.java
+│   ├── SupplierRepository.java
+│   ├── CategoryRepository.java
+│   └── TransactionRepository.java
+│
+└── config (optional)
+    └── DBConfig.java
