@@ -34,12 +34,6 @@ export default function DashboardPage() {
           <h1 className="page-title">{greeting}, {user?.username || 'there'}</h1>
           <p className="page-subtitle">Here's your inventory at a glance.</p>
         </div>
-        {summary && (
-          <div className="dashboard-header-stat">
-            <span className="dashboard-header-stat-label">Total Transactions</span>
-            <span className="dashboard-header-stat-value">{summary.totalTransactions || 0}</span>
-          </div>
-        )}
       </div>
 
       {/* Summary cards */}
@@ -55,17 +49,14 @@ export default function DashboardPage() {
             </svg>
           }
           iconClass="icon-blue"
-          trend={products.length > 0 ? `${totalStock} units` : null}
+          trend={products.length > 0 ? `${FormatUtils.number(totalStock)} total units` : null}
           delay={0}
         />
         <SummaryCard
-          label="Inventory Value"
+          label="Stock Value"
           value={loading ? '—' : FormatUtils.currency(totalValue)}
           icon={
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="1" x2="12" y2="23" />
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
+            <span className="rupee-icon">₹</span>
           }
           iconClass="icon-green"
           delay={80}
@@ -81,10 +72,8 @@ export default function DashboardPage() {
             </svg>
           }
           iconClass="icon-amber"
-          footer={lowStockProducts.length > 0
-            ? <span className="badge-warning">⬇ Needs attention</span>
-            : <span className="badge-success">✓ All good</span>
-          }
+          footer={lowStockProducts.length > 0 ? 'Needs attention' : 'All good'}
+          tone={lowStockProducts.length > 0 ? 'amber' : 'green'}
           delay={160}
         />
         <SummaryCard

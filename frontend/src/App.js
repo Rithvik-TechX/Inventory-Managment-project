@@ -14,6 +14,7 @@ import ReportsPage   from './pages/ReportsPage.jsx';
 import AddUserPage   from './pages/AddUserPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
+import LandingPage from './pages/LandingPage.jsx';
 import WorkspacePage from './pages/WorkspacePage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 import { CategoriesPage, SuppliersPage, OrdersPage } from './pages/ResourcePages.jsx';
@@ -24,6 +25,7 @@ import './styles/auth.css';
 import './styles/product-shell.css';
 import './styles/admin.css';
 import './styles/corrections.css';
+import './styles/v3.css';
 
 function Protected({ children, requiredRole }) {
   const { isAuthenticated, hasRole } = useAuth();
@@ -40,6 +42,7 @@ function AppRoutes() {
 
   return (
     <Routes>
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={
         isAuthenticated ? <Navigate to="/app/dashboard" replace /> : <LoginPage />
       } />
