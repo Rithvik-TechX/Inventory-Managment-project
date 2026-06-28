@@ -1,0 +1,9 @@
+-- Safe MySQL migration for existing InvenTrack databases.
+-- Hibernate ddl-auto=update will apply the same additions on startup.
+ALTER TABLE categories ADD COLUMN IF NOT EXISTS created_at DATETIME DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE categories ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT TRUE;
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS created_at DATETIME DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT TRUE;
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS contact_person VARCHAR(150);
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS email VARCHAR(150);
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS phone VARCHAR(30);

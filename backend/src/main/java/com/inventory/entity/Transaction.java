@@ -1,6 +1,7 @@
 package com.inventory.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.inventory.enums.TransactionStatus;
 import com.inventory.enums.TransactionType;
 import jakarta.persistence.*;
@@ -27,6 +28,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Transaction {
 
     @Id
@@ -71,18 +73,21 @@ public class Transaction {
     private LocalDate expectedDelivery;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id", nullable = false)
+    @JsonIgnoreProperties({"category", "supplier", "transactions", "hibernateLazyInitializer", "handler"})
     private Product product;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "supplier_id")
+    @JsonIgnoreProperties({"products", "transactions", "hibernateLazyInitializer", "handler"})
     private Supplier supplier;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"transactions", "hibernateLazyInitializer", "handler"})
     private User user;
 
     @PrePersist

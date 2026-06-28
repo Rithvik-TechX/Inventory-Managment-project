@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest(properties = {
         "spring.datasource.url=jdbc:h2:mem:auth-flow;MODE=MySQL;DB_CLOSE_DELAY=-1",
@@ -53,6 +54,19 @@ class AuthenticationFlowIntegrationTest {
 
         mockMvc.perform(get("/api/products")
                         .header("Authorization", "Bearer " + jwt))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/categories").header("Authorization", "Bearer " + jwt))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].createdAt").exists())
+                .andExpect(jsonPath("$[0].productCount").isNumber());
+
+        mockMvc.perform(get("/api/suppliers").header("Authorization", "Bearer " + jwt))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").exists())
+                .andExpect(jsonPath("$[0].active").exists());
+
+        mockMvc.perform(get("/api/orders").header("Authorization", "Bearer " + jwt))
                 .andExpect(status().isOk());
     }
 }

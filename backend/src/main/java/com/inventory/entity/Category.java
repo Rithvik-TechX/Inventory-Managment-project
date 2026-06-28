@@ -1,9 +1,11 @@
 package com.inventory.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Category {
 
     @Id
@@ -35,7 +38,8 @@ public class Category {
     @Column(nullable = false)
     private Boolean active = true;
 
-    @Column(nullable = false, updatable = false)
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @JsonIgnore
@@ -43,6 +47,4 @@ public class Category {
     @Builder.Default
     private List<Product> products = new ArrayList<>();
 
-    @PrePersist
-    protected void onCreate() { this.createdAt = LocalDateTime.now(); }
 }

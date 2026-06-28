@@ -99,22 +99,22 @@ public class DataLoader implements CommandLineRunner {
         // ── Suppliers ──────────────────────────────────────────────────
         Supplier techSupplier = supplierRepository.save(Supplier.builder()
                 .name("TechWorld Ltd")
-                .contactInfo("techworld@example.com | 040-12345678")
+                .contactPerson("TechWorld Sales").email("techworld@example.com").phone("040-12345678")
                 .address("Plot 12, HITEC City, Hyderabad 500081")
                 .build());
         Supplier officeSupplier = supplierRepository.save(Supplier.builder()
                 .name("OfficeHub Supplies")
-                .contactInfo("officehub@example.com | 040-87654321")
+                .contactPerson("OfficeHub Sales").email("officehub@example.com").phone("040-87654321")
                 .address("Begumpet, Hyderabad 500016")
                 .build());
         Supplier furnSupplier = supplierRepository.save(Supplier.builder()
                 .name("HomeStyle Furniture")
-                .contactInfo("homestyle@example.com | 040-11223344")
+                .contactPerson("HomeStyle Sales").email("homestyle@example.com").phone("040-11223344")
                 .address("Ameerpet, Hyderabad 500038")
                 .build());
         Supplier medSupplier = supplierRepository.save(Supplier.builder()
                 .name("MedPharma Inc")
-                .contactInfo("medpharma@example.com | 040-55667788")
+                .contactPerson("MedPharma Sales").email("medpharma@example.com").phone("040-55667788")
                 .address("Secunderabad, Hyderabad 500003")
                 .build());
 
