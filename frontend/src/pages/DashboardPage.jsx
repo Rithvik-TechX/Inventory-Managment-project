@@ -107,9 +107,9 @@ export default function DashboardPage() {
         <div className="dashboard-panel">
           <div className="dashboard-panel-title">
             <span>Products by Category</span>
-            <Link to="/products" className="panel-link">View all →</Link>
+            <Link to="/app/categories" className="panel-link">View all →</Link>
           </div>
-          <ChartComponent data={chartData} height={200} />
+          <ChartComponent data={chartData} height={260} />
         </div>
 
         {/* Low stock list */}

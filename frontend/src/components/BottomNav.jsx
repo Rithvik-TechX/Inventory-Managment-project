@@ -1,22 +1,13 @@
 import { NavLink } from 'react-router-dom';
-
-const items = [
-  ['/app/dashboard', '⌂', 'Home'],
-  ['/app/products', '□', 'Products'],
-  ['/app/reports', '⌁', 'Reports'],
-  ['/app/notifications', '♢', 'Alerts'],
-  ['/app/settings', '•••', 'More'],
-];
+import { useAuth } from '../hooks/useAuth';
 
 export default function BottomNav() {
-  return (
-    <nav className="bottom-nav" aria-label="Mobile navigation">
-      {items.map(([to, icon, label]) => (
-        <NavLink key={to} to={to} className={({ isActive }) => isActive ? 'active' : ''}>
-          <span className="bottom-nav__icon">{icon}</span>
-          <span>{label}</span>
-        </NavLink>
-      ))}
-    </nav>
-  );
+  const { hasRole } = useAuth();
+  const items = [
+    ['/app/dashboard', '⌂', 'Home'], ['/app/products', '□', 'Products'],
+    hasRole('MANAGER') ? ['/app/reports', '⌁', 'Reports'] : ['/app/categories', '▦', 'Categories'],
+    ['/app/notifications', '♢', 'Alerts'],
+    hasRole('MANAGER') ? ['/app/settings', '•••', 'More'] : ['/app/suppliers', '⌂', 'Suppliers'],
+  ];
+  return <nav className="bottom-nav" aria-label="Mobile navigation">{items.map(([to,icon,label])=><NavLink key={to} to={to} className={({isActive})=>isActive?'active':''}><span className="bottom-nav__icon">{icon}</span><span>{label}</span></NavLink>)}</nav>;
 }

@@ -1,4 +1,4 @@
-import { API_BASE_URL, TOKEN_KEY } from './Constants';
+import { API_BASE_URL, TOKEN_KEY, USER_KEY } from './Constants';
  
 const getToken = () => localStorage.getItem(TOKEN_KEY);
  
@@ -10,9 +10,9 @@ const headers = (extra = {}) => ({
  
 const handleResponse = async (res) => {
   // If token is expired or invalid, clear storage and redirect to login
-  if (res.status === 401 || res.status === 403) {
+  if ((res.status === 401 || res.status === 403) && getToken()) {
     localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem('inv_user');
+    localStorage.removeItem(USER_KEY);
     window.location.href = '/login';
     throw new Error('Session expired. Please login again.');
   }
@@ -35,6 +35,13 @@ export const api = {
   put: (path, body) =>
     fetch(`${API_BASE_URL}${path}`, {
       method: 'PUT',
+      headers: headers(),
+      body: JSON.stringify(body),
+    }).then(handleResponse),
+
+  patch: (path, body) =>
+    fetch(`${API_BASE_URL}${path}`, {
+      method: 'PATCH',
       headers: headers(),
       body: JSON.stringify(body),
     }).then(handleResponse),

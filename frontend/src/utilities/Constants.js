@@ -7,8 +7,8 @@ export const ROLES = {
   STAFF:   'STAFF',
 };
  
-export const TOKEN_KEY    = 'inv_token';
-export const USER_KEY     = 'inv_user';
+export const TOKEN_KEY    = 'inventtrack_token';
+export const USER_KEY     = 'inventtrack_user';
  
 export const LOW_STOCK_THRESHOLD = 10;
  

@@ -30,6 +30,7 @@ const NAV_ITEMS = [
   {
     to: '/app/reports',
     label: 'Reports',
+    role: 'MANAGER',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <line x1="18" y1="20" x2="18" y2="10" />
@@ -89,11 +90,7 @@ export default function Sidebar({ isOpen, onToggle }) {
         {/* Logo */}
         <div className="sidebar__logo">
           <div className="sidebar__logo-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-              <line x1="12" y1="22.08" x2="12" y2="12" />
-            </svg>
+            <strong>I</strong>
           </div>
           {!collapsed && <span className="sidebar__logo-text">InvenTrack</span>}
           <button
@@ -132,7 +129,7 @@ export default function Sidebar({ isOpen, onToggle }) {
 
         <div className="sidebar__nav sidebar__nav--secondary">
           {!collapsed && <div className="sidebar__section-label">Workspace</div>}
-          <NavLink to="/app/settings" className={({isActive}) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}><span className="sidebar__link-icon">⚙</span>{!collapsed && <span className="sidebar__link-label">Settings</span>}</NavLink>
+          {hasRole('MANAGER') && <NavLink to="/app/settings" className={({isActive}) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}><span className="sidebar__link-icon">⚙</span>{!collapsed && <span className="sidebar__link-label">Settings</span>}</NavLink>}
         </div>
 
         {/* Bottom user strip */}

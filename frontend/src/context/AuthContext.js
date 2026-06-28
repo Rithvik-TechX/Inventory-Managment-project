@@ -14,10 +14,17 @@ export function AuthProvider({ children }) {
     try {
       const data = await api.post('/auth/login', { username, password });
       const jwt = data.jwt || data.token;
+      const nextUser = data.user || {
+        id: data.id || data.userId,
+        name: data.name || data.username || username,
+        email: data.email || username,
+        username: data.username || username,
+        role: data.role,
+      };
       StorageUtils.setToken(jwt);
-      StorageUtils.setUser({ username: data.username, role: data.role });
+      StorageUtils.setUser(nextUser);
       setToken(jwt);
-      setUser({ username: data.username, role: data.role });
+      setUser(nextUser);
       return { success: true };
     } catch (err) {
       return { success: false, error: err.message };

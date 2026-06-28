@@ -122,17 +122,14 @@ export default function ReportsPage() {
               {/* KPI Cards */}
               <div className="summary-grid">
                 {[
-                  { label: 'Total SKUs', value: products.length, icon: '📦', cls: 'icon-blue' },
-                  { label: 'Inventory Value', value: FormatUtils.currency(totalValue), icon: '₹', cls: 'icon-green' },
-                  { label: 'Low Stock Items', value: lowStockProducts.length, icon: '⚠', cls: 'icon-amber' },
-                  { label: 'Categories', value: Object.keys(categoryMap).length, icon: '🏷', cls: 'icon-purple' },
+                  { label: 'Total SKUs', value: products.length, icon: '□', cls: 'icon-blue' },
+                  { label: 'Stock Value', value: FormatUtils.currency(totalValue), icon: '₹', cls: 'icon-green' },
+                  { label: 'Low Stock', value: lowStockProducts.length, icon: '!', cls: 'icon-amber' },
+                  { label: 'Categories', value: Object.keys(categoryMap).length, icon: '▦', cls: 'icon-purple' },
                 ].map((c, i) => (
-                  <div key={i} className="summary-card">
-                    <div className="summary-card-header">
-                      <span className="summary-card-label">{c.label}</span>
-                      <div className={`summary-card-icon ${c.cls}`}>{c.icon}</div>
-                    </div>
-                    <div className="summary-card-value">{loading ? '…' : c.value}</div>
+                  <div key={i} className="reports-kpi">
+                    <div className={`reports-kpi__icon ${c.cls}`}>{c.icon}</div>
+                    <div className="reports-kpi__text"><span>{c.label}</span><strong>{loading ? '…' : c.value}</strong></div>
                   </div>
                 ))}
               </div>
@@ -163,9 +160,9 @@ export default function ReportsPage() {
                   <div className="report-panel-title">Products by Category</div>
                   <div className="chart-container">
                     <ResponsiveContainer width="100%" height={300}>
-                      <BarChart data={categoryBarData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+                      <BarChart data={categoryBarData} margin={{ top: 10, right: 20, left: 0, bottom: 60 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#1e2a3d" />
-                        <XAxis dataKey="name" tick={{ fill: '#8892a4', fontSize: 12 }} axisLine={{ stroke: '#1e2a3d' }} />
+                        <XAxis dataKey="name" interval={0} angle={-30} textAnchor="end" height={72} tick={{ fill: '#8892a4', fontSize: 11 }} axisLine={{ stroke: '#1e2a3d' }} />
                         <YAxis tick={{ fill: '#8892a4', fontSize: 12 }} axisLine={{ stroke: '#1e2a3d' }} allowDecimals={false} />
                         <Tooltip content={<CustomTooltip />} />
                         <Bar dataKey="count" name="Products" radius={[6, 6, 0, 0]} maxBarSize={50}>
