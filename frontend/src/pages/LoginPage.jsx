@@ -1,214 +1,148 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { api } from '../utilities/ApiUtils';
 import { ValidationUtils } from '../utilities/ValidationUtils';
 import '../styles/login.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login, loading } = useAuth();
+  const [form, setForm]     = useState({ username: '', password: '' });
+  const [errors, setErrors] = useState({});
 
-  const [mode, setMode] = useState('login'); // 'login' or 'signup'
+  const handleChange = (field) => (e) =>
+    setForm(prev => ({ ...prev, [field]: e.target.value }));
 
-  // Login state
-  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
-  const [loginErrors, setLoginErrors] = useState({});
-  const [loginApiErr, setLoginApiErr] = useState('');
-
-  // Signup state
-  const [signupForm, setSignupForm] = useState({ name: '', email: '', password: '' });
-  const [signupErrors, setSignupErrors] = useState({});
-  const [signupApiErr, setSignupApiErr] = useState('');
-  const [signupSuccess, setSignupSuccess] = useState('');
-
-  const setLogin = (field) => (e) => setLoginForm(f => ({ ...f, [field]: e.target.value }));
-  const setSignup = (field) => (e) => setSignupForm(f => ({ ...f, [field]: e.target.value }));
-
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const errs = ValidationUtils.validateLogin(loginForm);
-    if (Object.keys(errs).length) { setLoginErrors(errs); return; }
-    setLoginErrors({}); setLoginApiErr('');
-
-    const result = await login(loginForm.username, loginForm.password);
+    const errs = ValidationUtils.validateLogin(form);
+    if (Object.keys(errs).length) { setErrors(errs); return; }
+    setErrors({});
+    const result = await login(form.username, form.password);
     if (result.success) {
       navigate('/dashboard');
     } else {
-      setLoginApiErr('Invalid username/email or password. Please try again.');
+      setErrors({ api: result.error || 'Invalid credentials. Please try again.' });
     }
   };
-
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    const errs = {};
-    if (!signupForm.name.trim()) errs.name = 'Name is required.';
-    if (!signupForm.email.trim()) errs.email = 'Email is required.';
-    else if (!/\S+@\S+\.\S+/.test(signupForm.email)) errs.email = 'Enter a valid email.';
-    if (!signupForm.password || signupForm.password.length < 6) errs.password = 'Password must be at least 6 characters.';
-    if (Object.keys(errs).length) { setSignupErrors(errs); return; }
-    setSignupErrors({}); setSignupApiErr(''); setSignupSuccess('');
-
-    try {
-      await api.post('/auth/signup', {
-        username: signupForm.email,
-        name: signupForm.name,
-        email: signupForm.email,
-        password: signupForm.password,
-        role: 'STAFF',
-      });
-      setSignupSuccess('Account created! You can now sign in.');
-      setTimeout(() => {
-        setMode('login');
-        setLoginForm({ username: signupForm.email, password: '' });
-        setSignupSuccess('');
-      }, 1500);
-    } catch (err) {
-      setSignupApiErr(err.message || 'Failed to create account.');
-    }
-  };
-
-
 
   return (
-    <div className="login-root">
-      {/* Left branding panel */}
+    <div className="login-page">
+      {/* Left: Branding panel */}
       <div className="login-brand">
-        <div className="login-brand-logo">
-          <span className="dot" />
-          InvenTrack
+        <div className="login-brand-content">
+          <div className="login-brand-logo">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </svg>
+            <span>InvenTrack</span>
+          </div>
+          <h1 className="login-brand-heading">
+            Smart inventory<br />management
+          </h1>
+          <p className="login-brand-desc">
+            Real-time stock monitoring, analytics, and low-stock alerts — everything you need to run your warehouse efficiently.
+          </p>
+
+          {/* Feature pills */}
+          <div className="login-features">
+            <div className="login-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+              Real-time stock tracking
+            </div>
+            <div className="login-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
+              </svg>
+              Analytics & reports
+            </div>
+            <div className="login-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              Low-stock alerts
+            </div>
+            <div className="login-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              Role-based access
+            </div>
+          </div>
         </div>
-        <h1>
-          Smart <em>Inventory</em><br />
-          Management
-        </h1>
-        <p>
-          Monitor stock levels, generate insightful reports, and keep your
-          supply chain running smoothly — all in one place.
-        </p>
-        <div className="login-brand-stats">
-          <div className="login-stat">
-            <span className="login-stat-value">Real‑time</span>
-            <span className="login-stat-label">Stock Monitoring</span>
-          </div>
-          <div className="login-stat">
-            <span className="login-stat-value">Auto</span>
-            <span className="login-stat-label">Low Stock Alerts</span>
-          </div>
-          <div className="login-stat">
-            <span className="login-stat-value">Full</span>
-            <span className="login-stat-label">Audit Reports</span>
-          </div>
+
+        {/* Decorative background elements */}
+        <div className="login-brand-bg">
+          <div className="login-brand-circle login-brand-circle--1" />
+          <div className="login-brand-circle login-brand-circle--2" />
+          <div className="login-brand-circle login-brand-circle--3" />
         </div>
       </div>
 
-      {/* Right form panel */}
+      {/* Right: Login form */}
       <div className="login-form-panel">
-
-        {/* ─── SIGN IN ─── */}
-        {mode === 'login' && (
-          <>
+        <div className="login-form-wrapper">
+          <div className="login-form-header">
             <h2>Welcome back</h2>
-            <p className="sub">Sign in to your account to continue.</p>
+            <p>Sign in to your account to continue.</p>
+          </div>
 
-            {loginApiErr && <div className="login-error">{loginApiErr}</div>}
+          {errors.api && (
+            <div className="login-error">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
+              </svg>
+              {errors.api}
+            </div>
+          )}
 
-            <form onSubmit={handleLogin} noValidate>
-              <div className="form-group">
-                <label>Username / Email</label>
-                <input
-                  type="text"
-                  value={loginForm.username}
-                  onChange={setLogin('username')}
-                  placeholder="Enter your username or email"
-                  autoFocus
-                />
-                {loginErrors.username && <div className="error-msg">{loginErrors.username}</div>}
-              </div>
+          <form onSubmit={handleSubmit} noValidate>
+            <div className="login-form-group">
+              <label htmlFor="username">Username</label>
+              <input
+                id="username"
+                type="text"
+                value={form.username}
+                onChange={handleChange('username')}
+                placeholder="Enter your username"
+                autoComplete="username"
+                autoFocus
+              />
+              {errors.username && <span className="login-field-error">{errors.username}</span>}
+            </div>
 
-              <div className="form-group">
-                <label>Password</label>
-                <input
-                  type="password"
-                  value={loginForm.password}
-                  onChange={setLogin('password')}
-                  placeholder="••••••••"
-                />
-                {loginErrors.password && <div className="error-msg">{loginErrors.password}</div>}
-              </div>
+            <div className="login-form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                value={form.password}
+                onChange={handleChange('password')}
+                placeholder="Enter your password"
+                autoComplete="current-password"
+              />
+              {errors.password && <span className="login-field-error">{errors.password}</span>}
+            </div>
 
-              <button type="submit" className="login-btn" disabled={loading}>
-                {loading ? 'Signing in…' : 'Sign In'}
-              </button>
-            </form>
+            <button type="submit" className="login-submit" disabled={loading}>
+              {loading ? (
+                <span className="login-spinner" />
+              ) : (
+                'Sign in'
+              )}
+            </button>
+          </form>
 
-            <p className="auth-switch">
-              Don't have an account?{' '}
-              <button className="link-btn" onClick={() => setMode('signup')}>Create one</button>
+          <div className="login-footer">
+            <p>
+              Inventory Management System &middot; <span style={{ color: 'var(--text-muted)' }}>v2.0</span>
             </p>
-          </>
-        )}
-
-        {/* ─── SIGN UP (Staff only) ─── */}
-        {mode === 'signup' && (
-          <>
-            <h2>Create Account</h2>
-            <p className="sub">Register as a Staff member to get started.</p>
-
-            {signupApiErr && <div className="login-error">{signupApiErr}</div>}
-            {signupSuccess && <div className="login-success">{signupSuccess}</div>}
-
-            <form onSubmit={handleSignup} noValidate>
-              <div className="form-group">
-                <label>Full Name</label>
-                <input
-                  type="text"
-                  value={signupForm.name}
-                  onChange={setSignup('name')}
-                  placeholder="e.g. Rithvik Gandhamalla"
-                  autoFocus
-                />
-                {signupErrors.name && <div className="error-msg">{signupErrors.name}</div>}
-              </div>
-
-              <div className="form-group">
-                <label>Email</label>
-                <input
-                  type="email"
-                  value={signupForm.email}
-                  onChange={setSignup('email')}
-                  placeholder="you@example.com"
-                />
-                {signupErrors.email && <div className="error-msg">{signupErrors.email}</div>}
-              </div>
-
-              <div className="form-group">
-                <label>Password</label>
-                <input
-                  type="password"
-                  value={signupForm.password}
-                  onChange={setSignup('password')}
-                  placeholder="Min. 6 characters"
-                />
-                {signupErrors.password && <div className="error-msg">{signupErrors.password}</div>}
-              </div>
-
-              <div className="role-info-box">
-                <span className="role-info-badge">STAFF</span>
-                <span className="role-info-text">View-only access. Admin & Manager roles are assigned by an administrator.</span>
-              </div>
-
-              <button type="submit" className="login-btn">
-                Create Account
-              </button>
-            </form>
-
-            <p className="auth-switch">
-              Already have an account?{' '}
-              <button className="link-btn" onClick={() => setMode('login')}>Sign in</button>
-            </p>
-          </>
-        )}
+          </div>
+        </div>
       </div>
     </div>
   );

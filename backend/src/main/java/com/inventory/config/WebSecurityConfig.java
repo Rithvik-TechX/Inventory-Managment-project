@@ -36,7 +36,7 @@ public class WebSecurityConfig {
                         // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
 
                         // Admin endpoints
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
@@ -50,6 +50,38 @@ public class WebSecurityConfig {
 
                         .requestMatchers(HttpMethod.DELETE, "/api/products/**")
                         .hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.PATCH, "/api/products/**")
+                        .hasAnyRole("ADMIN", "MANAGER")
+
+                        // Actuator endpoints (non-health require ADMIN)
+                        .requestMatchers("/actuator/**").hasRole("ADMIN")
+
+                        // Category endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/categories/**")
+                        .hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/api/categories/**")
+                        .hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/categories/**")
+                        .hasAnyRole("ADMIN", "MANAGER")
+
+                        // Supplier endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/suppliers/**")
+                        .hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/api/suppliers/**")
+                        .hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/suppliers/**")
+                        .hasAnyRole("ADMIN", "MANAGER")
+
+                        // Transaction endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/transactions/**")
+                        .hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/api/transactions/**")
+                        .hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/transactions/**")
+                        .hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/transactions/**")
+                        .hasAnyRole("ADMIN", "MANAGER")
 
                         // Inventory endpoints
                         .requestMatchers("/api/inventory/**")

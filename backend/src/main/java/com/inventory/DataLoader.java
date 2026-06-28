@@ -13,6 +13,9 @@ import java.util.List;
 @Component
 public class DataLoader implements CommandLineRunner {
 
+    static final String DEFAULT_ADMIN_EMAIL = "admin@inventory.com";
+    static final String DEFAULT_ADMIN_PASSWORD = "admin123";
+
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final SupplierRepository supplierRepository;
@@ -37,7 +40,8 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (userRepository.count() > 0) {
-            System.out.println("✅ Database already seeded. Skipping DataLoader.");
+            ensureDefaultAdminExists();
+            System.out.println("✅ Database already seeded. Skipping sample data.");
             return;
         }
 
@@ -46,8 +50,8 @@ public class DataLoader implements CommandLineRunner {
         // ── Users ──────────────────────────────────────────────────────
         User admin = userRepository.save(User.builder()
                 .name("Admin User")
-                .email("admin@inventory.com")
-                .password(passwordEncoder.encode("admin123"))
+                .email(DEFAULT_ADMIN_EMAIL)
+                .password(passwordEncoder.encode(DEFAULT_ADMIN_PASSWORD))
                 .role(UserRole.ADMIN)
                 .phoneNumber("9876543210")
                 .build());
@@ -204,5 +208,21 @@ public class DataLoader implements CommandLineRunner {
         System.out.println("      Admin:   admin@inventory.com / admin123");
         System.out.println("      Manager: manager@inventory.com / manager123");
         System.out.println("      Staff:   staff@inventory.com / staff123");
+    }
+
+    private void ensureDefaultAdminExists() {
+        if (userRepository.existsByEmail(DEFAULT_ADMIN_EMAIL)) {
+            return;
+        }
+
+        userRepository.save(User.builder()
+                .name("Admin User")
+                .email(DEFAULT_ADMIN_EMAIL)
+                .password(passwordEncoder.encode(DEFAULT_ADMIN_PASSWORD))
+                .role(UserRole.ADMIN)
+                .phoneNumber("9876543210")
+                .build());
+
+        System.out.println("✅ Default admin user created.");
     }
 }

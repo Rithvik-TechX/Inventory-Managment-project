@@ -5,8 +5,7 @@ import {
   AreaChart, Area,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
 } from 'recharts';
-import Navbar from '../components/Navbar';
-import Sidebar from '../components/Sidebar';
+import PageLayout from '../components/PageLayout';
 import LowStockBadge from '../components/LowStockBadge';
 import { useProducts } from '../hooks/useProducts';
 import { useReports } from '../hooks/useReports';
@@ -90,11 +89,8 @@ export default function ReportsPage() {
   const reportTime = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
   return (
-    <div className="page-layout">
-      <Sidebar />
-      <div className="main-content">
-        <Navbar title="Reports" />
-        <div className="page-inner fade-up" ref={reportRef}>
+    <PageLayout title="Reports">
+      <div ref={reportRef}>
           <div className="report-header">
             <div>
               <h1 className="page-title">Inventory Reports</h1>
@@ -527,8 +523,7 @@ export default function ReportsPage() {
             </div>
           )}
 
-        </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }

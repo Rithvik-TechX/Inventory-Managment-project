@@ -1,16 +1,17 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import { InventoryProvider } from './context/InventoryContext.jsx';
 import { useAuth } from './hooks/useAuth';
+import { ToastProvider } from './components/Toast';
 
-import LoginPage      from './pages/LoginPage.jsx';
-import DashboardPage  from './pages/DashboardPage.jsx';
-import ProductsPage   from './pages/ProductsPage.jsx';
+import LoginPage     from './pages/LoginPage.jsx';
+import DashboardPage from './pages/DashboardPage.jsx';
+import ProductsPage  from './pages/ProductsPage.jsx';
 import AddProductPage from './pages/AddProductPage.jsx';
-import ReportsPage    from './pages/ReportsPage.jsx';
-import AddUserPage    from './pages/AddUserPage.jsx';
+import ReportsPage   from './pages/ReportsPage.jsx';
+import AddUserPage   from './pages/AddUserPage.jsx';
 
 import './styles/global.css';
+import './styles/components.css';
 
 function Protected({ children, requiredRole }) {
   const { isAuthenticated, hasRole } = useAuth();
@@ -53,9 +54,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <InventoryProvider>
+        <ToastProvider>
           <AppRoutes />
-        </InventoryProvider>
+        </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
   );

@@ -104,7 +104,10 @@ public class ProductService {
         if (updated.getDescription() != null) product.setDescription(updated.getDescription());
         if (updated.getPrice() != null) product.setPrice(updated.getPrice());
 
-        product.setQuantity(updated.getQuantity());
+        // Guard: only update quantity if explicitly set (avoid primitive int default of 0 wiping stock)
+        if (updated.getQuantity() > 0 || (updated.getPrice() != null && updated.getQuantity() == 0)) {
+            product.setQuantity(updated.getQuantity());
+        }
 
         if (updated.getMaxStock() != null) product.setMaxStock(updated.getMaxStock());
         if (updated.getReorderLevel() != null) product.setReorderLevel(updated.getReorderLevel());

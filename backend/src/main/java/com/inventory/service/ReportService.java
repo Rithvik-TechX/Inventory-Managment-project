@@ -5,6 +5,7 @@ import com.inventory.entity.Product;
 import com.inventory.enums.TransactionStatus;
 import com.inventory.enums.TransactionType;
 import com.inventory.repository.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +16,8 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class ReportService {
 
-    private static final String ADMIN_EMAIL = "rithvikgandhamalla14@gmail.com";
+    @Value("${admin.email:admin@inventory.com}")
+    private String adminEmail;
 
     private final TransactionRepository transactionRepository;
     private final ProductRepository productRepository;
@@ -94,11 +96,11 @@ public class ReportService {
             // Send email to admin
             try {
                 emailService.sendEmail(
-                    ADMIN_EMAIL,
+                    adminEmail,
                     "Low Stock Alert — " + lowStockProducts.size() + " Product(s) Need Restocking",
                     emailBody.toString()
                 );
-                System.out.println("Email: Low stock alert sent to " + ADMIN_EMAIL);
+                System.out.println("Email: Low stock alert sent to " + adminEmail);
             } catch (Exception e) {
                 System.err.println("Failed to send low stock email: " + e.getMessage());
             }

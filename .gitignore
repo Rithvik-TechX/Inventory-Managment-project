@@ -43,3 +43,15 @@ npm-debug.log*
 ### Build output logs ###
 build_output.txt
 run_output.txt
+
+### Environment files ###
+.env
+.env.local
+.env.*.local
+!.env.example
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+### Backend local config ###
+**/application-local.properties

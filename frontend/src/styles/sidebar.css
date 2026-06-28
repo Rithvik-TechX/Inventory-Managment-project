@@ -1,0 +1,315 @@
+/* ===================================
+   SIDEBAR STYLES
+   =================================== */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width, 260px);
+  height: 100vh;
+  background: var(--bg-sidebar, var(--bg-secondary));
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 300;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.sidebar--collapsed {
+  width: 68px;
+}
+
+/* ── Logo ── */
+.sidebar__logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  min-height: 64px;
+}
+
+.sidebar__logo-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent-primary), hsl(250, 80%, 65%));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.sidebar__logo-text {
+  font-family: var(--font-display, 'Inter', sans-serif);
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.sidebar__collapse-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.sidebar__collapse-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+/* ── Section labels ── */
+.sidebar__section-label {
+  padding: 20px 20px 8px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+/* ── Navigation ── */
+.sidebar__nav {
+  flex: 1;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+  position: relative;
+  white-space: nowrap;
+}
+
+.sidebar__link:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.sidebar__link--active {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.sidebar__link--active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background: var(--accent-primary);
+  border-radius: 0 4px 4px 0;
+}
+
+.sidebar__link-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sidebar__link-label {
+  opacity: 1;
+  transition: opacity 0.15s;
+}
+
+.sidebar--collapsed .sidebar__link-label,
+.sidebar--collapsed .sidebar__section-label {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.sidebar--collapsed .sidebar__link {
+  justify-content: center;
+  padding: 10px;
+}
+
+.sidebar--collapsed .sidebar__logo {
+  justify-content: center;
+  padding: 20px 12px 16px;
+}
+
+.sidebar--collapsed .sidebar__logo-text {
+  display: none;
+}
+
+.sidebar--collapsed .sidebar__collapse-btn {
+  margin-left: 0;
+}
+
+/* ── Footer / User ── */
+.sidebar__footer {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sidebar__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.sidebar__avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-primary), hsl(250, 80%, 65%));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.sidebar__user-info {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.sidebar__user-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-primary);
+}
+
+.sidebar__user-role {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.role-admin   { color: var(--accent-purple, #a78bfa); }
+.role-manager { color: var(--accent-primary, #4f8eff); }
+.role-staff   { color: var(--accent-green, #22c55e); }
+
+.sidebar__logout-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.sidebar__logout-btn:hover {
+  color: var(--accent-red, #ef4444);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.sidebar--collapsed .sidebar__user-info {
+  display: none;
+}
+
+.sidebar--collapsed .sidebar__footer {
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Mobile overlay ── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 290;
+}
+
+.desktop-only {
+  display: flex;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: 280px !important;
+  }
+
+  .sidebar--open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    display: block;
+  }
+
+  .sidebar--collapsed {
+    width: 280px;
+  }
+
+  .sidebar--collapsed .sidebar__link-label,
+  .sidebar--collapsed .sidebar__section-label {
+    opacity: 1;
+    width: auto;
+  }
+
+  .sidebar--collapsed .sidebar__link {
+    justify-content: flex-start;
+    padding: 10px 12px;
+  }
+
+  .sidebar--collapsed .sidebar__logo-text {
+    display: inline;
+  }
+
+  .sidebar--collapsed .sidebar__user-info {
+    display: block;
+  }
+
+  .sidebar--collapsed .sidebar__footer {
+    flex-direction: row;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+}
