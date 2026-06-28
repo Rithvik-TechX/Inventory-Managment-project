@@ -10,6 +10,8 @@ import com.inventory.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.inventory.entity.User;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -160,8 +162,10 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDTO> createProduct(@RequestBody Map<String, Object> body) {
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody Map<String, Object> body,
+                                                    @AuthenticationPrincipal User currentUser) {
         Product product = fromRequest(body);
+        product.setCreatedBy(currentUser);
         Product saved = productService.createProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(toDTO(saved));
     }

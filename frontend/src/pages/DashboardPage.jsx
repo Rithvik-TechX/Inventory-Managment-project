@@ -37,7 +37,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Summary cards */}
-      <div className="summary-grid">
+      <div className="summary-grid kpi-grid">
         <SummaryCard
           label="Total Products"
           value={loading ? '—' : FormatUtils.number(products.length)}
@@ -59,6 +59,7 @@ export default function DashboardPage() {
             <span className="rupee-icon">₹</span>
           }
           iconClass="icon-green"
+          currency
           delay={80}
         />
         <SummaryCard

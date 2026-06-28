@@ -83,6 +83,12 @@ export default function ReportsPage() {
   }));
 
   const handlePrint = () => window.print();
+  const handleExport = () => {
+    const rows = [['Name','SKU','Category','Supplier','Quantity','Unit Price','Value'], ...products.map(p => [p.name,p.sku,p.category,p.supplier,p.quantity,p.unitPrice,p.quantity*p.unitPrice])];
+    const csv = rows.map(row => row.map(value => `"${String(value ?? '').replaceAll('"','""')}"`).join(',')).join('\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const link = document.createElement('a'); link.href = url; link.download = 'inventtrack-inventory-report.csv'; link.click(); URL.revokeObjectURL(url);
+  };
 
   const now = new Date();
   const reportDate = now.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -98,9 +104,7 @@ export default function ReportsPage() {
                 Real-time analytics • Generated on {reportDate} at {reportTime}
               </p>
             </div>
-            <button className="btn btn-primary btn-sm" onClick={handlePrint}>
-              🖨️ Print Report
-            </button>
+            <div className="report-actions"><button className="btn btn-secondary btn-sm" onClick={handleExport}>Export CSV</button><button className="btn btn-primary btn-sm" onClick={handlePrint}>Print Report</button></div>
           </div>
 
           {/* Tab bar */}

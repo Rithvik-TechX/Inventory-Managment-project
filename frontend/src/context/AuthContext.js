@@ -37,6 +37,7 @@ export function AuthProvider({ children }) {
     StorageUtils.clearAll();
     setUser(null);
     setToken(null);
+    window.location.href = '/';
   };
 
   const hasRole = (required) => {

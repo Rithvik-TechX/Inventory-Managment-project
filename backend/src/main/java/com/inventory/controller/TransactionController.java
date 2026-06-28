@@ -57,6 +57,7 @@ public class TransactionController {
                 .userName(t.getUser() != null ? t.getUser().getName() : null)
                 .createdAt(t.getCreatedAt() != null ? t.getCreatedAt().toString() : null)
                 .updatedAt(t.getUpdatedAt() != null ? t.getUpdatedAt().toString() : null)
+                .expectedDelivery(t.getExpectedDelivery() != null ? t.getExpectedDelivery().toString() : null)
                 .build();
     }
 

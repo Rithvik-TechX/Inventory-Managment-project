@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class ReportService {
 
-    @Value("${admin.email:admin@inventory.com}")
+    @Value("${app.admin.email}")
     private String adminEmail;
 
     private final TransactionRepository transactionRepository;

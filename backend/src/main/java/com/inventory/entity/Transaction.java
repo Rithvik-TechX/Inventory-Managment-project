@@ -10,6 +10,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "transactions", indexes = {
@@ -65,6 +66,9 @@ public class Transaction {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    @Column(name = "expected_delivery")
+    private LocalDate expectedDelivery;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

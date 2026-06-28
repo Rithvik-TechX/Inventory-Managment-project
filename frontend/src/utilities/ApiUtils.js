@@ -10,10 +10,10 @@ const headers = (extra = {}) => ({
  
 const handleResponse = async (res) => {
   // If token is expired or invalid, clear storage and redirect to login
-  if ((res.status === 401 || res.status === 403) && getToken()) {
+  if (res.status === 401 && getToken()) {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
-    window.location.href = '/login';
+    window.location.href = '/';
     throw new Error('Session expired. Please login again.');
   }
   const data = await res.json().catch(() => ({}));

@@ -19,14 +19,14 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final ProductRepository productRepository;
-    private final ReportService reportService;
+    private final ProductService productService;
 
     public TransactionService(TransactionRepository transactionRepository,
                               ProductRepository productRepository,
-                              ReportService reportService) {
+                              ProductService productService) {
         this.transactionRepository = transactionRepository;
         this.productRepository = productRepository;
-        this.reportService = reportService;
+        this.productService = productService;
     }
 
     // Create transaction and auto-update product stock
@@ -47,7 +47,8 @@ public class TransactionService {
                         + ", Requested: " + transaction.getQuantity());
             }
             product.setQuantity(product.getQuantity() - transaction.getQuantity());
-        } else if (transaction.getTransactionType() == TransactionType.PURCHASE) {
+        } else if (transaction.getTransactionType() == TransactionType.PURCHASE
+                && transaction.getTransactionStatus() == TransactionStatus.COMPLETED) {
             product.setQuantity(product.getQuantity() + transaction.getQuantity());
         } else if (transaction.getTransactionType() == TransactionType.RETURN) {
             product.setQuantity(product.getQuantity() + transaction.getQuantity());
@@ -57,10 +58,7 @@ public class TransactionService {
         productRepository.save(product);
         Transaction saved = transactionRepository.save(transaction);
 
-        // Check for low stock and send email alert if needed
-        if (product.isLowStock()) {
-            reportService.checkAndSendLowStockAlert();
-        }
+        productService.checkAndSendLowStockAlert(product);
 
         return saved;
     }
@@ -109,6 +107,14 @@ public class TransactionService {
     public Transaction updateStatus(Long id, TransactionStatus status) {
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + id));
+        if (transaction.getTransactionType() == TransactionType.PURCHASE
+                && transaction.getTransactionStatus() != TransactionStatus.COMPLETED
+                && status == TransactionStatus.COMPLETED) {
+            Product product = transaction.getProduct();
+            product.setQuantity(product.getQuantity() + transaction.getQuantity());
+            productRepository.save(product);
+            productService.checkAndSendLowStockAlert(product);
+        }
         transaction.setTransactionStatus(status);
         return transactionRepository.save(transaction);
     }

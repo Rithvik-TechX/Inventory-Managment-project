@@ -76,6 +76,12 @@ public class UserController {
         return ResponseEntity.ok(toDTO(userService.updateUser(id, updated)));
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> patchUser(@PathVariable Long id,
+                                                          @RequestBody Map<String, String> body) {
+        return updateUser(id, body);
+    }
+
     @PutMapping("/password")
     public ResponseEntity<Map<String, String>> changePassword(@RequestBody Map<String, String> body) {
         // Simple password change - requires current password + new password

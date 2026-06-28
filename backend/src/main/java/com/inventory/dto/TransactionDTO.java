@@ -27,4 +27,5 @@ public class TransactionDTO {
 
     private String createdAt;
     private String updatedAt;
+    private String expectedDelivery;
 }

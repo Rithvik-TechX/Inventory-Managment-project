@@ -60,7 +60,7 @@ export function useProducts() {
     setProducts(prev => prev.filter(p => p.id !== id));
   };
 
-  const lowStockProducts = products.filter(p => p.lowStock || p.quantity < (p.maxStock * 0.5));
+  const lowStockProducts = products.filter(p => p.lowStock || p.quantity <= p.reorderLevel);
 
   return {
     products, loading, error,

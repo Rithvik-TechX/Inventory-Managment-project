@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "categories", indexes = {
@@ -34,8 +35,14 @@ public class Category {
     @Column(nullable = false)
     private Boolean active = true;
 
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
     @JsonIgnore
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     private List<Product> products = new ArrayList<>();
+
+    @PrePersist
+    protected void onCreate() { this.createdAt = LocalDateTime.now(); }
 }

@@ -19,6 +19,9 @@ export default function ProductsPage() {
   const [saving, setSaving]         = useState(false);
   const [categoryFilter, setCategoryFilter] = useState('');
   const [sortBy, setSortBy]         = useState('name');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // Unique categories for filter chips
   const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
@@ -32,6 +35,9 @@ export default function ProductsPage() {
   if (categoryFilter) {
     filtered = filtered.filter(p => p.category === categoryFilter);
   }
+  if (statusFilter === 'low') filtered = filtered.filter(p => p.quantity > 0 && p.quantity <= p.reorderLevel);
+  if (statusFilter === 'in') filtered = filtered.filter(p => p.quantity > p.reorderLevel);
+  if (statusFilter === 'out') filtered = filtered.filter(p => p.quantity === 0);
 
   // Sort
   filtered = [...filtered].sort((a, b) => {
@@ -43,6 +49,9 @@ export default function ProductsPage() {
       default:           return 0;
     }
   });
+  const pageCount = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
+  const currentPage = Math.min(page, pageCount);
+  const visibleProducts = filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
   const handleEdit = async (data) => {
     setSaving(true);
@@ -120,6 +129,9 @@ export default function ProductsPage() {
             <option value="price">Sort: Price</option>
             <option value="value">Sort: Value</option>
           </select>
+          <select className="sort-select" value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }}>
+            <option value="">All statuses</option><option value="in">In Stock</option><option value="low">Low Stock</option><option value="out">Out of Stock</option>
+          </select>
 
           {hasRole('MANAGER') && (
             <button className="btn btn-primary" onClick={() => navigate('/add-product')}>
@@ -154,11 +166,12 @@ export default function ProductsPage() {
       )}
 
       <ProductTable
-        products={filtered}
+        products={visibleProducts}
         loading={loading}
         onEdit={setEditTarget}
         onDelete={handleDelete}
       />
+      {!loading && filtered.length > 0 && <div className="pagination-bar"><button className="btn btn-secondary btn-sm" disabled={currentPage<=1} onClick={()=>setPage(p=>p-1)}>Previous</button><span>Page {currentPage} of {pageCount}</span><button className="btn btn-secondary btn-sm" disabled={currentPage>=pageCount} onClick={()=>setPage(p=>p+1)}>Next</button><label>Rows per page <select value={rowsPerPage} onChange={e=>{setRowsPerPage(Number(e.target.value));setPage(1)}}><option>10</option><option>25</option><option>50</option></select></label></div>}
     </PageLayout>
   );
 }

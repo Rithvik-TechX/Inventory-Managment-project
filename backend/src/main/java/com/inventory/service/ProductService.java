@@ -2,6 +2,7 @@ package com.inventory.service;
 
 import com.inventory.entity.Product;
 import com.inventory.repository.ProductRepository;
+import com.inventory.enums.UserRole;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,12 +14,12 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final ReportService reportService;
+    private final EmailService emailService;
 
     public ProductService(ProductRepository productRepository,
-                          ReportService reportService) {
+                          EmailService emailService) {
         this.productRepository = productRepository;
-        this.reportService = reportService;
+        this.emailService = emailService;
     }
 
     //  CREATE
@@ -26,7 +27,9 @@ public class ProductService {
         if (product.getSku() != null && productRepository.existsBySku(product.getSku())) {
             throw new RuntimeException("Product with SKU '" + product.getSku() + "' already exists");
         }
-        return productRepository.save(product);
+        Product saved = productRepository.save(product);
+        checkAndSendLowStockAlert(saved);
+        return saved;
     }
 
     //  READ
@@ -86,10 +89,7 @@ public class ProductService {
         product.setQuantity(newQuantity);
         Product saved = productRepository.save(product);
 
-        // Check for low stock and send email alert if needed
-        if (saved.isLowStock()) {
-            reportService.checkAndSendLowStockAlert();
-        }
+        checkAndSendLowStockAlert(saved);
 
         return saved;
     }
@@ -117,10 +117,7 @@ public class ProductService {
 
         Product saved = productRepository.save(product);
 
-        // Check for low stock and send email alert if needed
-        if (saved.isLowStock()) {
-            reportService.checkAndSendLowStockAlert();
-        }
+        checkAndSendLowStockAlert(saved);
 
         return saved;
     }
@@ -129,6 +126,26 @@ public class ProductService {
     @Transactional(readOnly = true)
     public long getProductCount() {
         return productRepository.count();
+    }
+
+    public void checkAndSendLowStockAlert(Product product) {
+        boolean low = product.getQuantity() <= product.getReorderLevel();
+        if (low && !Boolean.TRUE.equals(product.getLowStockAlertSent())) {
+            String category = product.getCategory() == null ? "Uncategorized" : product.getCategory().getName();
+            emailService.sendLowStockAlertToMainAdmin(product.getName(), product.getSku(),
+                    product.getQuantity(), product.getReorderLevel(), category);
+            if (product.getCreatedBy() != null && product.getCreatedBy().getRole() == UserRole.ADMIN
+                    && product.getCreatedBy().getEmail() != null
+                    && !product.getCreatedBy().getEmail().equalsIgnoreCase("rithvikgandhamalla14@gmail.com")) {
+                emailService.sendLowStockAlert(product.getName(), product.getSku(), product.getQuantity(),
+                        product.getReorderLevel(), category, product.getCreatedBy().getEmail());
+            }
+            product.setLowStockAlertSent(true);
+            productRepository.save(product);
+        } else if (!low && Boolean.TRUE.equals(product.getLowStockAlertSent())) {
+            product.setLowStockAlertSent(false);
+            productRepository.save(product);
+        }
     }
 
     //  SOFT DELETE

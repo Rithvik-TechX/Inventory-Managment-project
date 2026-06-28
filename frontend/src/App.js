@@ -16,8 +16,9 @@ import RegisterPage from './pages/RegisterPage.jsx';
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
 import LandingPage from './pages/LandingPage.jsx';
 import WorkspacePage from './pages/WorkspacePage.jsx';
-import SettingsPage from './pages/SettingsPage.jsx';
-import { CategoriesPage, SuppliersPage, OrdersPage } from './pages/ResourcePages.jsx';
+import SettingsPage from './pages/SettingsPageV4.jsx';
+import { CategoriesPage, SuppliersPage } from './pages/ResourcePages.jsx';
+import OrdersPage from './pages/OrdersPage.jsx';
 
 import './styles/global.css';
 import './styles/components.css';
@@ -26,6 +27,9 @@ import './styles/product-shell.css';
 import './styles/admin.css';
 import './styles/corrections.css';
 import './styles/v3.css';
+import './styles/v4.css';
+import './styles/v4-extra.css';
+import './styles/v4-notification.css';
 
 function Protected({ children, requiredRole }) {
   const { isAuthenticated, hasRole } = useAuth();

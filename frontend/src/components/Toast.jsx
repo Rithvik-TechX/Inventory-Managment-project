@@ -83,7 +83,7 @@ function ToastContainer({ toasts, onDismiss }) {
 
   return (
     <div style={{
-      position: 'fixed', top: 20, right: 20, zIndex: 10000,
+      position: 'fixed', bottom: 20, right: 20, zIndex: 10000,
       display: 'flex', flexDirection: 'column', gap: 10,
       pointerEvents: 'none', maxWidth: 400, width: '100%',
     }}>

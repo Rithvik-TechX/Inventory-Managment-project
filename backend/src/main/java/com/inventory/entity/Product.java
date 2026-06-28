@@ -60,6 +60,10 @@ public class Product {
     @Builder.Default
     private Boolean active = true;
 
+    @Builder.Default
+    @Column(name = "low_stock_alert_sent", nullable = false)
+    private Boolean lowStockAlertSent = false;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -72,6 +76,11 @@ public class Product {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by_id")
+    private User createdBy;
 
     @JsonIgnore
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
@@ -90,6 +99,6 @@ public class Product {
     }
 
     public boolean isLowStock() {
-        return quantity < (maxStock * 0.5);
+        return quantity <= reorderLevel;
     }
 }
