@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
+import BottomNav from './BottomNav';
 
 /**
  * Standard page layout used by all authenticated pages.
@@ -24,6 +25,7 @@ export default function PageLayout({ title, children }) {
           {children}
         </div>
       </div>
+      <BottomNav />
     </div>
   );
 }

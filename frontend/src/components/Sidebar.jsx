@@ -5,7 +5,7 @@ import '../styles/sidebar.css';
 
 const NAV_ITEMS = [
   {
-    to: '/dashboard',
+    to: '/app/dashboard',
     label: 'Dashboard',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -17,7 +17,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    to: '/products',
+    to: '/app/products',
     label: 'Products',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -28,7 +28,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    to: '/reports',
+    to: '/app/reports',
     label: 'Reports',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -39,9 +39,8 @@ const NAV_ITEMS = [
     ),
   },
   {
-    to: '/add-product',
-    label: 'Add Product',
-    role: 'MANAGER',
+    to: '/app/categories',
+    label: 'Categories',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <line x1="12" y1="5" x2="12" y2="19" />
@@ -50,9 +49,8 @@ const NAV_ITEMS = [
     ),
   },
   {
-    to: '/add-user',
-    label: 'Add User',
-    role: 'ADMIN',
+    to: '/app/suppliers',
+    label: 'Suppliers',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -62,6 +60,7 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
+  { to: '/app/orders', label: 'Orders', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 2h12l3 6-9 4-9-4 3-6Z"/><path d="M3 8v10l9 4 9-4V8"/></svg> },
 ];
 
 export default function Sidebar({ isOpen, onToggle }) {
@@ -130,6 +129,11 @@ export default function Sidebar({ isOpen, onToggle }) {
             );
           })}
         </nav>
+
+        <div className="sidebar__nav sidebar__nav--secondary">
+          {!collapsed && <div className="sidebar__section-label">Workspace</div>}
+          <NavLink to="/app/settings" className={({isActive}) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}><span className="sidebar__link-icon">⚙</span>{!collapsed && <span className="sidebar__link-label">Settings</span>}</NavLink>
+        </div>
 
         {/* Bottom user strip */}
         <div className="sidebar__footer">
