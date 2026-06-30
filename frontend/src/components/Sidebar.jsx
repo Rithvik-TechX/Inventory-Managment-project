@@ -2,6 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useState, useEffect } from 'react';
 import '../styles/sidebar.css';
+import { Logo } from './ui/Logo';
 
 const NAV_ITEMS = [
   {
@@ -89,10 +90,7 @@ export default function Sidebar({ isOpen, onToggle }) {
       <aside className={`sidebar ${isOpen ? 'sidebar--open' : ''} ${collapsed ? 'sidebar--collapsed' : ''}`}>
         {/* Logo */}
         <div className="sidebar__logo">
-          <div className="sidebar__logo-icon">
-            <strong>I</strong>
-          </div>
-          {!collapsed && <span className="sidebar__logo-text">InvenTrack</span>}
+          <Logo size={34} showText={!collapsed} textSize={17} />
           <button
             className="sidebar__collapse-btn desktop-only"
             onClick={() => setCollapsed(!collapsed)}

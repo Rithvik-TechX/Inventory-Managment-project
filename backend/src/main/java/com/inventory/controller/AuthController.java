@@ -6,6 +6,7 @@ import com.inventory.dto.auth.SignupRequestDTO;
 import com.inventory.dto.auth.SignupResponseDTO;
 import com.inventory.service.auth.AuthService;
 import com.inventory.service.UserService;
+import com.inventory.service.PasswordResetService;
 import com.inventory.entity.User;
 import com.inventory.enums.UserRole;
 import org.springframework.http.HttpStatus;
@@ -20,10 +21,12 @@ public class AuthController {
 
     private final AuthService authService;
     private final UserService userService;
+    private final PasswordResetService passwordResetService;
 
-    public AuthController(AuthService authService, UserService userService) {
+    public AuthController(AuthService authService, UserService userService, PasswordResetService passwordResetService) {
         this.authService = authService;
         this.userService = userService;
+        this.passwordResetService = passwordResetService;
     }
 
     @PostMapping("/login")
@@ -51,6 +54,19 @@ public class AuthController {
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> health() {
         return ResponseEntity.ok(Map.of("status", "ok"));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Map<String, String>> forgotPassword(@RequestBody Map<String, String> request) {
+        passwordResetService.requestReset(request.get("email"));
+        return ResponseEntity.ok(Map.of(
+                "message", "If an account exists with that email, reset instructions have been sent."));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, String>> resetPassword(@RequestBody Map<String, String> request) {
+        passwordResetService.resetPassword(request.get("token"), request.get("newPassword"));
+        return ResponseEntity.ok(Map.of("message", "Password reset successfully. You can now sign in."));
     }
 
     @PostMapping("/create-user")

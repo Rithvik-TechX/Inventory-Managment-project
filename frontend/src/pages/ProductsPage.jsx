@@ -1,21 +1,25 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import PageLayout from '../components/PageLayout';
 import ProductTable from '../components/ProductTable';
 import ProductForm from '../components/ProductForm';
+import Modal from '../components/Modal';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { useProducts } from '../hooks/useProducts';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../components/Toast';
 import '../styles/inventory.css';
 
 export default function ProductsPage() {
-  const { products, loading, editProduct, removeProduct } = useProducts();
+  const { products, loading, addProduct, editProduct, removeProduct } = useProducts();
   const { hasRole } = useAuth();
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const toast = useToast();
 
   const [search, setSearch]         = useState('');
   const [editTarget, setEditTarget] = useState(null);
+  const [creating, setCreating] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [saving, setSaving]         = useState(false);
   const [categoryFilter, setCategoryFilter] = useState('');
   const [sortBy, setSortBy]         = useState('name');
@@ -66,10 +70,23 @@ export default function ProductsPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this product? This cannot be undone.')) return;
+  const handleAdd = async (data) => {
+    setSaving(true);
     try {
-      await removeProduct(id);
+      await addProduct(data);
+      setCreating(false);
+      toast.success('Product added successfully');
+    } catch (e) {
+      toast.error('Create failed: ' + e.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await removeProduct(deleteTarget.id);
+      setDeleteTarget(null);
       toast.success('Product deleted');
     } catch (e) {
       toast.error('Delete failed: ' + e.message);
@@ -78,22 +95,28 @@ export default function ProductsPage() {
 
   return (
     <PageLayout title="Products">
-      {/* Edit drawer */}
-      {editTarget && (
-        <div className="edit-drawer">
-          <h2 className="edit-drawer-title">Edit Product</h2>
-          <p className="edit-drawer-subtitle">
-            Updating: <strong>{editTarget.name}</strong>
-          </p>
+      <Modal isOpen={Boolean(editTarget)} onClose={() => setEditTarget(null)} title="Edit Product" size="lg">
+        {editTarget && (
           <ProductForm
             initial={editTarget}
             onSubmit={handleEdit}
             onCancel={() => setEditTarget(null)}
             loading={saving}
           />
-          <hr className="edit-drawer-divider" />
-        </div>
-      )}
+        )}
+      </Modal>
+
+      <Modal isOpen={creating} onClose={() => setCreating(false)} title="Add Product" size="lg">
+        <ProductForm onSubmit={handleAdd} onCancel={() => setCreating(false)} loading={saving} />
+      </Modal>
+
+      <ConfirmDialog
+        isOpen={Boolean(deleteTarget)}
+        title="Delete product"
+        message={deleteTarget ? `Delete “${deleteTarget.name}”? This cannot be undone.` : ''}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+      />
 
       <h1 className="page-title">Products</h1>
       <p className="page-subtitle">
@@ -134,7 +157,7 @@ export default function ProductsPage() {
           </select>
 
           {hasRole('MANAGER') && (
-            <button className="btn btn-primary" onClick={() => navigate('/add-product')}>
+            <button className="btn btn-primary" onClick={() => setCreating(true)}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
               </svg>
@@ -169,7 +192,8 @@ export default function ProductsPage() {
         products={visibleProducts}
         loading={loading}
         onEdit={setEditTarget}
-        onDelete={handleDelete}
+        onDelete={product => setDeleteTarget(product)}
+        highlightId={searchParams.get('highlight')}
       />
       {!loading && filtered.length > 0 && <div className="pagination-bar"><button className="btn btn-secondary btn-sm" disabled={currentPage<=1} onClick={()=>setPage(p=>p-1)}>Previous</button><span>Page {currentPage} of {pageCount}</span><button className="btn btn-secondary btn-sm" disabled={currentPage>=pageCount} onClick={()=>setPage(p=>p+1)}>Next</button><label>Rows per page <select value={rowsPerPage} onChange={e=>{setRowsPerPage(Number(e.target.value));setPage(1)}}><option>10</option><option>25</option><option>50</option></select></label></div>}
     </PageLayout>

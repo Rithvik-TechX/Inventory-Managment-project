@@ -1,0 +1,16 @@
+.inventtrack-logo{display:inline-flex;align-items:center;gap:10px;line-height:1}.inventtrack-logo__mark{display:block;flex-shrink:0}.inventtrack-logo__text{font-weight:700;letter-spacing:-.03em;white-space:nowrap}
+
+/* Neutralize legacy letter-mark selectors now that the logo is a shared SVG component. */
+.classic-login__brand .inventtrack-logo,
+.classic-login__brand .inventtrack-logo__text,
+.landing-brand > .inventtrack-logo {
+  width: auto !important;
+  height: auto !important;
+  display: inline-flex !important;
+  place-items: initial !important;
+  border-radius: 0 !important;
+  color: inherit !important;
+  background: transparent !important;
+  font-size: inherit;
+}
+.classic-login__brand .inventtrack-logo__text { color: #111827 !important; }

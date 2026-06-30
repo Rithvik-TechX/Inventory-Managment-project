@@ -10,12 +10,16 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableAsync
 public class IntegratedApplication {
     private static final Logger logger = LoggerFactory.getLogger(IntegratedApplication.class);
+
+    @Value("${spring.mail.password:}")
+    private String mailPassword;
 
     public static void main(String[] args) {
         SpringApplication.run(IntegratedApplication.class, args);
@@ -43,6 +47,13 @@ public class IntegratedApplication {
                 logger.warn("  Database appears empty. Check datasource configuration.");
             }
             logger.info("=================================================");
+            if (mailPassword == null || mailPassword.isBlank()) {
+                logger.warn("=================================================");
+                logger.warn("  GMAIL_APP_PASSWORD is not set in backend/.env");
+                logger.warn("  Low-stock and password-reset emails will not be sent.");
+                logger.warn("  See backend/README.md for setup instructions.");
+                logger.warn("=================================================");
+            }
         };
     }
 }

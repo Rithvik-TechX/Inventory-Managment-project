@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 /**
  * Accessible modal dialog with overlay, escape-to-close, and backdrop click.
@@ -9,13 +10,14 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
   }, [onClose]);
 
   useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
     }
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = '';
+      document.body.style.overflow = previousOverflow;
     };
   }, [isOpen, handleEscape]);
 
@@ -24,10 +26,10 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
   const sizeMap = { sm: 420, md: 560, lg: 720 };
   const maxWidth = sizeMap[size] || sizeMap.md;
 
-  return (
-    <div className="modal-overlay" onClick={onClose}>
+  return createPortal(
+    <div className="modal-overlay modal-backdrop" onClick={onClose}>
       <div
-        className="modal-content"
+        className="modal-content modal-card"
         onClick={e => e.stopPropagation()}
         style={{ maxWidth }}
         role="dialog"
@@ -46,6 +48,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

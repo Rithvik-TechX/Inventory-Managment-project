@@ -3,7 +3,7 @@ import { FormatUtils } from '../utilities/FormatUtils';
 import { useAuth } from '../hooks/useAuth';
 import { SkeletonTable } from './Skeleton';
 
-export default function ProductTable({ products, onEdit, onDelete, loading }) {
+export default function ProductTable({ products, onEdit, onDelete, loading, highlightId }) {
   const { hasRole } = useAuth();
 
   if (loading) {
@@ -45,7 +45,7 @@ export default function ProductTable({ products, onEdit, onDelete, loading }) {
         </thead>
         <tbody>
           {products.map((p, i) => (
-            <tr key={p.id}>
+            <tr key={p.id} className={String(p.id) === String(highlightId) ? 'search-highlight' : ''}>
               <td style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}>
                 {String(i + 1).padStart(2, '0')}
               </td>
@@ -79,7 +79,7 @@ export default function ProductTable({ products, onEdit, onDelete, loading }) {
                       Edit
                     </button>
                     {hasRole('ADMIN') && (
-                      <button className="btn btn-danger btn-sm" onClick={() => onDelete(p.id)}>
+                      <button className="btn btn-danger btn-sm" onClick={() => onDelete(p)}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <polyline points="3 6 5 6 21 6" />
                           <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />

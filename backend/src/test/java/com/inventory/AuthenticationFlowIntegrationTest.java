@@ -68,5 +68,10 @@ class AuthenticationFlowIntegrationTest {
 
         mockMvc.perform(get("/api/orders").header("Authorization", "Bearer " + jwt))
                 .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/search?q=wireless").header("Authorization", "Bearer " + jwt))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.products[0].name").value("Wireless Mouse"))
+                .andExpect(jsonPath("$.products[0].sku").value("ELEC-002"));
     }
 }

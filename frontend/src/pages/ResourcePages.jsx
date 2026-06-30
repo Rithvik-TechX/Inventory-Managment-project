@@ -1,35 +1,159 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import PageLayout from '../components/PageLayout';
 import Modal from '../components/Modal';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { useToast } from '../components/Toast';
 import { api } from '../utilities/ApiUtils';
 import '../styles/admin.css';
 
-export function CategoriesPage(){return <ResourcePage type="category"/>}
-export function SuppliersPage(){return <ResourcePage type="supplier"/>}
+export function CategoriesPage() { return <ResourcePage type="category" />; }
+export function SuppliersPage() { return <ResourcePage type="supplier" />; }
 
-const configs={
- category:{title:'Categories',path:'/categories',empty:{name:'',description:''},columns:[['name','Name'],['description','Description'],['productCount','Product Count'],['createdAt','Created Date']]},
- supplier:{title:'Suppliers',path:'/suppliers',empty:{name:'',contactPerson:'',email:'',phone:'',address:'',active:true},columns:[['name','Name'],['contactPerson','Contact Person'],['email','Email'],['phone','Phone'],['productCount','Products'],['active','Status']]}
+const configs = {
+  category: {
+    title: 'Categories', path: '/categories', empty: { name: '', description: '' },
+    columns: [['name', 'Name'], ['description', 'Description'], ['productCount', 'Product Count'], ['createdAt', 'Created Date']],
+  },
+  supplier: {
+    title: 'Suppliers', path: '/suppliers',
+    empty: { name: '', contactPerson: '', email: '', phone: '', address: '', active: true },
+    columns: [['name', 'Name'], ['contactPerson', 'Contact Person'], ['email', 'Email'], ['phone', 'Phone'], ['productCount', 'Products'], ['active', 'Status']],
+  },
 };
 
-function ResourcePage({type}){
- const cfg=configs[type],toast=useToast(); const [rows,setRows]=useState([]),[loading,setLoading]=useState(true),[modal,setModal]=useState(false),[editing,setEditing]=useState(null),[form,setForm]=useState(cfg.empty);
- const load=async()=>{try{const data=await api.get(cfg.path);let next=Array.isArray(data)?data:data.content||[];if(type==='category'){const productsData=await api.get('/products');const products=Array.isArray(productsData)?productsData:productsData.content||[];next=next.map(category=>({...category,productCount:products.filter(product=>product.category===category.name||product.category?.name===category.name).length}))}setRows(next)}catch(e){toast.error(e.message)}finally{setLoading(false)}};
- useEffect(()=>{load()},[]);
- const open=row=>{setEditing(row||null);setForm(row?{...cfg.empty,...row}:cfg.empty);setModal(true)};
- const save=async e=>{e.preventDefault();try{const payload=type==='supplier'?{...form,phone:form.phoneNumber||form.phone}:form;const result=editing?await api.put(`${cfg.path}/${editing.id}`,payload):await api.post(cfg.path,payload);setRows(list=>editing?list.map(x=>x.id===editing.id?result:x):[...list,result]);setModal(false);toast.success(`${type==='category'?'Category':'Supplier'} saved.`)}catch(e){toast.error(e.message)}};
- const remove=async row=>{if(!window.confirm(type==='category'?`Delete '${row.name}'? Products in this category will become uncategorized.`:`Delete '${row.name}'?`))return;try{await api.delete(`${cfg.path}/${row.id}`);setRows(list=>list.filter(x=>x.id!==row.id));toast.success(`${type==='category'?'Category':'Supplier'} deleted.`)}catch(e){toast.error(e.message)}};
- const display=(row,key)=>{if(key==='active')return <span className={`status-chip ${row.active===false?'inactive':''}`}>{row.active===false?'Inactive':'Active'}</span>;if(key==='createdAt')return row[key]?new Date(row[key]).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'Not recorded';return row[key]??(key==='productCount'?0:'—')};
- return <PageLayout title={cfg.title}><div className="admin-heading"><div><h1>{cfg.title}</h1><p>{type==='category'?'Organize products into clear, searchable groups.':'Manage vendor contacts and availability.'}</p></div><button className="btn-primary" onClick={()=>open()}>+ Add {type==='category'?'Category':'Supplier'}</button></div><section className="settings-card resource-card"><div className="table-scroll"><table className={`admin-table ${type==='category'?'categories-table':''}`}>{type==='category'&&<colgroup><col/><col/><col/><col/><col/></colgroup>}<thead><tr>{cfg.columns.map(([,label])=><th key={label}>{label}</th>)}<th>Actions</th></tr></thead><tbody>{loading?<tr><td colSpan={cfg.columns.length+1}>Loading {cfg.title.toLowerCase()}…</td></tr>:rows.length?rows.map(row=><tr key={row.id}>{cfg.columns.map(([key])=><td key={key}>{display(row,key)}</td>)}<td><div className="table-actions"><button className="edit-action" onClick={()=>open(row)}>✎ Edit</button><button className="delete-action" onClick={()=>remove(row)}>♲ Delete</button></div></td></tr>):<tr><td colSpan={cfg.columns.length+1}><div className="proper-empty"><div>{type==='category'?'▦':'⌂'}</div><strong>No {cfg.title.toLowerCase()} yet</strong><p>Add your first {type} to get started.</p><button className="btn-primary" onClick={()=>open()}>+ Add {type==='category'?'Category':'Supplier'}</button></div></td></tr>}</tbody></table></div></section><Modal isOpen={modal} onClose={()=>setModal(false)} title={`${editing?'Edit':'Add'} ${type==='category'?'Category':'Supplier'}`} size={type==='category'?'md':'md'}><form onSubmit={save} className="modal-form">{type==='category'?<><Field label="Category Name" required value={form.name} onChange={set('name',form,setForm)}/><Field label="Description" textarea value={form.description} onChange={set('description',form,setForm)}/></>:<><Field label="Supplier Name" required value={form.name} onChange={set('name',form,setForm)}/><Field label="Contact Person Name" required value={form.contactPerson} onChange={set('contactPerson',form,setForm)}/><Field label="Email" type="email" required value={form.email} onChange={set('email',form,setForm)}/><Field label="Phone Number" value={form.phoneNumber} onChange={set('phoneNumber',form,setForm)}/><Field label="Address" textarea value={form.address} onChange={set('address',form,setForm)}/><label className="inline-toggle"><input type="checkbox" checked={form.active!==false} onChange={e=>setForm({...form,active:e.target.checked})}/> Active supplier</label></>}<div className="modal-actions"><button type="button" className="btn-secondary" onClick={()=>setModal(false)}>Cancel</button><button className="btn-primary">Save {type==='category'?'Category':'Supplier'}</button></div></form></Modal></PageLayout>
+function ResourcePage({ type }) {
+  const cfg = configs[type];
+  const toast = useToast();
+  const [searchParams] = useSearchParams();
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [modal, setModal] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [form, setForm] = useState(cfg.empty);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await api.get(cfg.path);
+        let next = Array.isArray(data) ? data : data.content || [];
+        if (type === 'category') {
+          const productsData = await api.get('/products');
+          const products = Array.isArray(productsData) ? productsData : productsData.content || [];
+          next = next.map(category => ({
+            ...category,
+            productCount: products.filter(product =>
+              product.category === category.name || product.category?.name === category.name).length,
+          }));
+        }
+        setRows(next);
+      } catch (error) {
+        toast.error(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [cfg.path, toast, type]);
+
+  const open = row => {
+    setEditing(row || null);
+    setForm(row ? { ...cfg.empty, ...row } : cfg.empty);
+    setModal(true);
+  };
+
+  const save = async event => {
+    event.preventDefault();
+    try {
+      const payload = type === 'supplier' ? { ...form, phone: form.phoneNumber || form.phone } : form;
+      const result = editing
+        ? await api.put(`${cfg.path}/${editing.id}`, payload)
+        : await api.post(cfg.path, payload);
+      setRows(list => editing ? list.map(item => item.id === editing.id ? result : item) : [...list, result]);
+      setModal(false);
+      toast.success(`${type === 'category' ? 'Category' : 'Supplier'} saved.`);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const remove = async () => {
+    setDeleting(true);
+    try {
+      await api.delete(`${cfg.path}/${deleteTarget.id}`);
+      setRows(list => list.filter(item => item.id !== deleteTarget.id));
+      setDeleteTarget(null);
+      toast.success(`${type === 'category' ? 'Category' : 'Supplier'} deleted.`);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const display = (row, key) => {
+    if (key === 'active') return <span className={`status-chip ${row.active === false ? 'inactive' : ''}`}>{row.active === false ? 'Inactive' : 'Active'}</span>;
+    if (key === 'createdAt') return row[key] ? new Date(row[key]).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Not recorded';
+    return row[key] ?? (key === 'productCount' ? 0 : '—');
+  };
+
+  const resourceName = type === 'category' ? 'Category' : 'Supplier';
+  const highlightId = searchParams.get('highlight');
+
+  return (
+    <PageLayout title={cfg.title}>
+      <div className="admin-heading">
+        <div><h1>{cfg.title}</h1><p>{type === 'category' ? 'Organize products into clear, searchable groups.' : 'Manage vendor contacts and availability.'}</p></div>
+        <button className="btn-primary" onClick={() => open()}>+ Add {resourceName}</button>
+      </div>
+      <section className="settings-card resource-card">
+        <div className="table-scroll">
+          <table className={`admin-table ${type === 'category' ? 'categories-table' : ''}`}>
+            <thead><tr>{cfg.columns.map(([, label]) => <th key={label}>{label}</th>)}<th>Actions</th></tr></thead>
+            <tbody>
+              {loading ? <tr><td colSpan={cfg.columns.length + 1}>Loading {cfg.title.toLowerCase()}…</td></tr> : rows.length ? rows.map(row => (
+                <tr key={row.id} className={String(row.id) === String(highlightId) ? 'search-highlight' : ''}>
+                  {cfg.columns.map(([key]) => <td key={key}>{display(row, key)}</td>)}
+                  <td><div className="table-actions"><button className="edit-action" onClick={() => open(row)}>✎ Edit</button><button className="delete-action" onClick={() => setDeleteTarget(row)}>Delete</button></div></td>
+                </tr>
+              )) : <tr><td colSpan={cfg.columns.length + 1}><div className="proper-empty"><strong>No {cfg.title.toLowerCase()} yet</strong><p>Add your first {type} to get started.</p><button className="btn-primary" onClick={() => open()}>+ Add {resourceName}</button></div></td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <Modal isOpen={modal} onClose={() => setModal(false)} title={`${editing ? 'Edit' : 'Add'} ${resourceName}`}>
+        <form onSubmit={save} className="modal-form">
+          {type === 'category' ? <>
+            <Field label="Category Name" required value={form.name} onChange={set('name', form, setForm)} />
+            <Field label="Description" textarea value={form.description} onChange={set('description', form, setForm)} />
+          </> : <>
+            <Field label="Supplier Name" required value={form.name} onChange={set('name', form, setForm)} />
+            <Field label="Contact Person Name" required value={form.contactPerson} onChange={set('contactPerson', form, setForm)} />
+            <Field label="Email" type="email" required value={form.email} onChange={set('email', form, setForm)} />
+            <Field label="Phone Number" value={form.phoneNumber || form.phone} onChange={set('phoneNumber', form, setForm)} />
+            <Field label="Address" textarea value={form.address} onChange={set('address', form, setForm)} />
+            <label className="inline-toggle"><input type="checkbox" checked={form.active !== false} onChange={event => setForm({ ...form, active: event.target.checked })} /> Active supplier</label>
+          </>}
+          <div className="modal-actions"><button type="button" className="btn-secondary" onClick={() => setModal(false)}>Cancel</button><button className="btn-primary">Save {resourceName}</button></div>
+        </form>
+      </Modal>
+
+      <ConfirmDialog
+        isOpen={Boolean(deleteTarget)}
+        title={`Delete ${resourceName.toLowerCase()}`}
+        message={deleteTarget ? `Delete “${deleteTarget.name}”? Referenced inventory records will be protected.` : ''}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={remove}
+        busy={deleting}
+      />
+    </PageLayout>
+  );
 }
 
-export function OrdersPage(){
- const toast=useToast();const [orders,setOrders]=useState([]),[products,setProducts]=useState([]),[suppliers,setSuppliers]=useState([]),[loading,setLoading]=useState(true),[modal,setModal]=useState(false),[form,setForm]=useState({productId:'',supplierId:'',quantity:1,notes:''});
- const load=async()=>{try{const [o,p,s]=await Promise.all([api.get('/transactions'),api.get('/products'),api.get('/suppliers')]);setOrders(Array.isArray(o)?o:[]);setProducts(Array.isArray(p)?p:p.content||[]);setSuppliers(Array.isArray(s)?s:[])}catch(e){toast.error(e.message)}finally{setLoading(false)}};useEffect(()=>{load()},[]);
- const create=async e=>{e.preventDefault();try{const product=products.find(x=>String(x.id)===String(form.productId));const next=await api.post('/transactions',{...form,quantity:Number(form.quantity),totalPrice:Number(form.quantity)*(product?.unitPrice||0),transactionType:'PURCHASE',transactionStatus:'PENDING',description:'Purchase order'});setOrders(list=>[next,...list]);setModal(false);toast.success('Order placed.')}catch(e){toast.error(e.message)}};
- const status=async(row,nextStatus)=>{try{const next=await api.patch(`/transactions/${row.id}/status`,{status:nextStatus});setOrders(list=>list.map(x=>x.id===row.id?next:x));toast.success('Order status updated.')}catch(e){toast.error(e.message)}};
- return <PageLayout title="Orders"><div className="admin-heading"><div><h1>Orders</h1><p>Track purchase orders from request to receiving.</p></div><button className="btn-primary" onClick={()=>setModal(true)}>+ Create Order</button></div><section className="settings-card resource-card"><div className="table-scroll"><table className="admin-table"><thead><tr><th>Order ID</th><th>Product</th><th>Supplier</th><th>Quantity</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody>{loading?<tr><td colSpan="7">Loading orders…</td></tr>:orders.length?orders.map(row=>{const raw=row.transactionStatus||'PENDING',label=raw==='COMPLETED'?'RECEIVED':raw;return <tr key={row.id}><td>{row.referenceId||`ORD-${row.id}`}</td><td>{row.productName||'—'}</td><td>{row.supplierName||'—'}</td><td>{row.quantity}</td><td><span className={`order-status ${label.toLowerCase()}`}>{label}</span></td><td>{row.createdAt?new Date(row.createdAt).toLocaleDateString():'—'}</td><td><select value={raw} onChange={e=>status(row,e.target.value)}><option value="PENDING">Pending</option><option value="COMPLETED">Received</option><option value="CANCELLED">Cancelled</option></select></td></tr>}):<tr><td colSpan="7"><div className="proper-empty"><div>▤</div><strong>No orders yet</strong><p>Create a purchase order when stock needs replenishing.</p><button className="btn-primary" onClick={()=>setModal(true)}>+ Create Order</button></div></td></tr>}</tbody></table></div></section><Modal isOpen={modal} onClose={()=>setModal(false)} title="Create Order"><form onSubmit={create} className="modal-form"><label><span>Product</span><select required value={form.productId} onChange={e=>setForm({...form,productId:e.target.value})}><option value="">Select product</option>{products.map(x=><option value={x.id} key={x.id}>{x.name}</option>)}</select></label><label><span>Supplier</span><select required value={form.supplierId} onChange={e=>setForm({...form,supplierId:e.target.value})}><option value="">Select supplier</option>{suppliers.map(x=><option value={x.id} key={x.id}>{x.name}</option>)}</select></label><Field label="Quantity" type="number" min="1" required value={form.quantity} onChange={set('quantity',form,setForm)}/><Field label="Notes" textarea value={form.notes} onChange={set('notes',form,setForm)}/><div className="modal-actions"><button type="button" className="btn-secondary" onClick={()=>setModal(false)}>Cancel</button><button className="btn-primary">Place Order</button></div></form></Modal></PageLayout>
+const set = (key, form, setForm) => event => setForm({ ...form, [key]: event.target.value });
+function Field({ label, textarea, ...props }) {
+  return <label><span>{label}</span>{textarea ? <textarea rows="3" {...props} /> : <input {...props} />}</label>;
 }
-const set=(key,form,setForm)=>e=>setForm({...form,[key]:e.target.value});
-function Field({label,textarea,...props}){return <label><span>{label}</span>{textarea?<textarea rows="3" {...props}/>:<input {...props}/>}</label>}

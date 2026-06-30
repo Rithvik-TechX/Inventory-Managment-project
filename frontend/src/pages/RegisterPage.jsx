@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../utilities/ApiUtils';
 import '../styles/auth.css';
+import { Logo } from '../components/ui/Logo';
 
 const steps = ['Personal', 'Company', 'Security', 'Review'];
 const initial = { firstName: '', lastName: '', email: '', phone: '', company: '', department: 'Warehouse', password: '', confirm: '' };
@@ -34,7 +35,7 @@ export default function RegisterPage() {
   return (
     <main className="auth-page auth-page--center">
       <section className="register-card">
-        <Link to="/login" className="auth-logo"><span className="auth-logo__mark">I</span><span>InvenTrack</span></Link>
+        <Link to="/login" className="auth-logo"><Logo size={40} textSize={18} /></Link>
         <div className="register-heading"><p className="eyebrow">STAFF ONBOARDING</p><h1>Create your workspace account</h1><p>Four quick steps and you’ll be ready to manage inventory.</p></div>
         <div className="staff-notice"><strong>Staff registration only.</strong> Admin and Manager accounts are set up by your system administrator.</div>
         <div className="stepper" aria-label={`Step ${step + 1} of 4`}>

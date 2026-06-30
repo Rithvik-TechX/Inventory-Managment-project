@@ -43,6 +43,8 @@
 
 Inventory features still work when mail is not configured. Email delivery failures are logged and do not propagate into inventory transactions.
 
+The same Gmail app password powers low-stock alerts and password-reset emails. After setting it, restart the backend and confirm the missing-password startup warning disappears. Test password recovery from `/forgot-password`; reset links expire after 30 minutes and can only be used once.
+
 ## Troubleshooting
 
 - `Could not resolve placeholder`: ensure the checked-in properties still use `${VARIABLE:default}` syntax; `.env` is only needed for real local credentials.

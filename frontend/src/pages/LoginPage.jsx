@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import '../styles/login.css';
+import { Logo } from '../components/ui/Logo';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ export default function LoginPage() {
 
   return <main className="classic-login">
     <section className={`classic-login__card ${shaking ? 'is-shaking' : ''}`}>
-      <div className="classic-login__brand"><span>I</span><strong>InvenTrack</strong></div>
+      <div className="classic-login__brand"><Logo size={40} textSize={20} /></div>
       <p className="classic-login__subtitle">Sign in to your account</p>
       {params.get('registered') === 'true' && <div className="auth-success">Account created! You can now sign in.</div>}
       <form onSubmit={submit} noValidate>

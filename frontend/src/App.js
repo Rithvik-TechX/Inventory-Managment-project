@@ -14,6 +14,7 @@ import ReportsPage   from './pages/ReportsPage.jsx';
 import AddUserPage   from './pages/AddUserPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
 import LandingPage from './pages/LandingPage.jsx';
 import WorkspacePage from './pages/WorkspacePage.jsx';
 import SettingsPage from './pages/SettingsPageV4.jsx';
@@ -52,6 +53,7 @@ function AppRoutes() {
       } />
       <Route path="/register" element={isAuthenticated ? <Navigate to="/app/dashboard" replace /> : <RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/dashboard" element={
         <Protected><DashboardPage /></Protected>
       } />
