@@ -64,7 +64,7 @@ public class User implements UserDetails {
     private Boolean active = true;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Transaction> transactions = new ArrayList<>();
 

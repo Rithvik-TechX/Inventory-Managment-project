@@ -7,9 +7,13 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class EmailService {
+    private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
+
     private final JavaMailSender mailSender;
 
     @Value("${spring.mail.username}") private String fromAddress;
@@ -29,8 +33,9 @@ public class EmailService {
             helper.setSubject("Low Stock Alert — " + productName + " | InvenTrack");
             helper.setText(buildLowStockEmailHtml(productName, sku, currentStock, reorderPoint, categoryName), true);
             mailSender.send(message);
+            logger.info("Low-stock email sent successfully to {}", recipientEmail);
         } catch (Exception ex) {
-            System.err.println("[Email] Failed to send low-stock alert to " + recipientEmail + ": " + ex.getMessage());
+            logger.error("Failed to send low-stock email to {}: {}", recipientEmail, ex.getMessage());
         }
     }
 
@@ -45,8 +50,9 @@ public class EmailService {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromAddress); message.setTo(recipient); message.setSubject(subject); message.setText(body);
             mailSender.send(message);
+            logger.info("Email sent successfully to {}", recipient);
         } catch (Exception ex) {
-            System.err.println("[Email] Failed to send to " + recipient + ": " + ex.getMessage());
+            logger.error("Failed to send email to {}: {}", recipient, ex.getMessage());
         }
     }
 

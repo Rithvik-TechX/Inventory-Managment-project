@@ -43,7 +43,7 @@ public class Category {
     private LocalDateTime createdAt;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Product> products = new ArrayList<>();
 

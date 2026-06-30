@@ -40,6 +40,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/auth/create-user").hasRole("ADMIN")
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
 
                         // Users
